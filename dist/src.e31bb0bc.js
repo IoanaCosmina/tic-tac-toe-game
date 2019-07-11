@@ -25894,8 +25894,6 @@ function (_React$Component) {
     key: "render",
     value: function render() {
       return _react.default.createElement("div", null, _react.default.createElement("div", {
-        className: "status"
-      }, status), _react.default.createElement("div", {
         className: "board-row"
       }, this.renderSquare(0), this.renderSquare(1), this.renderSquare(2)), _react.default.createElement("div", {
         className: "board-row"
@@ -25947,7 +25945,9 @@ function (_React$Component2) {
 
       this.setState({
         history: history.concat([{
-          squares: squares
+          squares: squares,
+          lastestMove: i //save the index of the most recent move
+
         }]),
         xIsNext: !this.state.xIsNext,
         stepNumber: history.length
@@ -25970,7 +25970,10 @@ function (_React$Component2) {
       var current = history[this.state.stepNumber];
       var winner = calculateWinner(current.squares);
       var moves = history.map(function (step, move) {
-        var desc = move ? 'Go to move #' + move : 'Go to game start';
+        var latestMove = step.lastestMove;
+        var row = Math.floor(latestMove / 3) + 1;
+        var column = latestMove % 3 + 1;
+        var desc = move ? 'Go to move #' + move + ' at row ' + row + ', column ' + column : 'Go to game start';
         return _react.default.createElement("li", {
           key: move
         }, _react.default.createElement("button", {
@@ -26052,7 +26055,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49715" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58592" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
