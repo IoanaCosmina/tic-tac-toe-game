@@ -25933,7 +25933,8 @@ function (_React$Component2) {
         squares: Array(9).fill(null)
       }],
       xIsNext: true,
-      stepNumber: 0
+      stepNumber: 0,
+      isOrderAsc: true
     };
     return _this2;
   }
@@ -25973,6 +25974,13 @@ function (_React$Component2) {
       });
     }
   }, {
+    key: "handleToggleOrder",
+    value: function handleToggleOrder() {
+      this.setState({
+        isOrderAsc: !this.state.isOrderAsc
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this3 = this;
@@ -25994,6 +26002,12 @@ function (_React$Component2) {
           }
         }, desc));
       });
+      var isOrderAsc = this.state.isOrderAsc;
+
+      if (!isOrderAsc) {
+        moves.reverse();
+      }
+
       var status;
 
       if (winner) {
@@ -26013,7 +26027,11 @@ function (_React$Component2) {
         }
       })), _react.default.createElement("div", {
         className: "game-info"
-      }, _react.default.createElement("div", null, status), _react.default.createElement("ol", null, moves)));
+      }, _react.default.createElement("div", null, status), _react.default.createElement("button", {
+        onClick: function onClick() {
+          return _this3.handleToggleOrder();
+        }
+      }, isOrderAsc ? 'Sort Descending' : 'Sort Ascending'), _react.default.createElement("ol", null, moves)));
     }
   }]);
 
@@ -26067,7 +26085,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64744" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49863" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
