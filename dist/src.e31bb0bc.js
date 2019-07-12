@@ -25859,8 +25859,9 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 //stateless functional component
 function Square(props) {
+  var className = "square" + (props.highlight ? ' highlight' : '');
   return _react.default.createElement("button", {
-    className: "square",
+    className: className,
     onClick: props.onClick
   }, props.value);
 }
@@ -25881,27 +25882,38 @@ function (_React$Component) {
     value: function renderSquare(i) {
       var _this = this;
 
-      return _react.default.createElement(Square //value and onClick are both props sent to Square component
-      , {
+      var winnerMoves = this.props.winnerMoves;
+      return _react.default.createElement(Square, {
+        key: i //value and onClick are both props sent to Square component
+        ,
         value: this.props.squares[i] //passing the location of each square into the onClick handler
         ,
         onClick: function onClick() {
           return _this.props.onClick(i);
-        }
+        },
+        highlight: winnerMoves && winnerMoves.includes(i)
       });
     }
   }, {
     key: "render",
     value: function render() {
-      return _react.default.createElement("div", null, _react.default.createElement("div", {
-        className: "status"
-      }, status), _react.default.createElement("div", {
-        className: "board-row"
-      }, this.renderSquare(0), this.renderSquare(1), this.renderSquare(2)), _react.default.createElement("div", {
-        className: "board-row"
-      }, this.renderSquare(3), this.renderSquare(4), this.renderSquare(5)), _react.default.createElement("div", {
-        className: "board-row"
-      }, this.renderSquare(6), this.renderSquare(7), this.renderSquare(8)));
+      var boardSize = 3;
+      var squares = [];
+
+      for (var i = 0; i < boardSize; i++) {
+        var row = [];
+
+        for (var j = 0; j < boardSize; j++) {
+          row.push(this.renderSquare(i * boardSize + j));
+        }
+
+        squares.push(_react.default.createElement("div", {
+          key: i,
+          className: "board-row"
+        }, row));
+      }
+
+      return _react.default.createElement("div", null, squares);
     }
   }]);
 
@@ -25924,7 +25936,8 @@ function (_React$Component2) {
         squares: Array(9).fill(null)
       }],
       xIsNext: true,
-      stepNumber: 0
+      stepNumber: 0,
+      isOrderAsc: true
     };
     return _this2;
   }
@@ -25938,7 +25951,7 @@ function (_React$Component2) {
 
       var squares = current.squares.slice(); //if there is already a winner or the square is filled, return early
 
-      if (calculateWinner(squares) || squares[i]) {
+      if (calculateWinner(squares).winner || squares[i]) {
         return;
       } //set current square
 
@@ -25947,7 +25960,9 @@ function (_React$Component2) {
 
       this.setState({
         history: history.concat([{
-          squares: squares
+          squares: squares,
+          lastestMove: i //save the index of the most recent move
+
         }]),
         xIsNext: !this.state.xIsNext,
         stepNumber: history.length
@@ -25962,29 +25977,52 @@ function (_React$Component2) {
       });
     }
   }, {
+    key: "handleToggleOrder",
+    value: function handleToggleOrder() {
+      this.setState({
+        isOrderAsc: !this.state.isOrderAsc
+      });
+    }
+  }, {
     key: "render",
     value: function render() {
       var _this3 = this;
 
       var history = this.state.history;
       var current = history[this.state.stepNumber];
-      var winner = calculateWinner(current.squares);
+      var winner = calculateWinner(current.squares).winner;
+      var winnerMoves = calculateWinner(current.squares).line;
+      var isDraw = calculateWinner(current.squares).isDraw;
       var moves = history.map(function (step, move) {
-        var desc = move ? 'Go to move #' + move : 'Go to game start';
+        var latestMove = step.lastestMove;
+        var row = Math.floor(latestMove / 3) + 1;
+        var column = latestMove % 3 + 1;
+        var desc = move ? 'Go to move #' + move + ' at row ' + row + ', column ' + column : 'Go to game start';
         return _react.default.createElement("li", {
           key: move
         }, _react.default.createElement("button", {
+          className: _this3.state.stepNumber === move ? 'move-button-selected' : '',
           onClick: function onClick() {
             return _this3.jumpTo(move);
           }
         }, desc));
       });
+      var isOrderAsc = this.state.isOrderAsc;
+
+      if (!isOrderAsc) {
+        moves.reverse();
+      }
+
       var status;
 
       if (winner) {
         status = 'Winner: ' + winner;
       } else {
-        status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+        if (isDraw) {
+          status = 'Draw';
+        } else {
+          status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+        }
       }
 
       return _react.default.createElement("div", {
@@ -25995,10 +26033,15 @@ function (_React$Component2) {
         squares: current.squares,
         onClick: function onClick(i) {
           return _this3.handleClick(i);
-        }
+        },
+        winnerMoves: winnerMoves
       })), _react.default.createElement("div", {
         className: "game-info"
-      }, _react.default.createElement("div", null, status), _react.default.createElement("ol", null, moves)));
+      }, _react.default.createElement("div", null, status), _react.default.createElement("button", {
+        onClick: function onClick() {
+          return _this3.handleToggleOrder();
+        }
+      }, isOrderAsc ? 'Sort Descending' : 'Sort Ascending'), _react.default.createElement("ol", null, moves)));
     }
   }]);
 
@@ -26018,11 +26061,28 @@ function calculateWinner(squares) {
         c = _lines$i[2];
 
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return {
+        winner: squares[a],
+        line: lines[i],
+        isDraw: false
+      };
     }
   }
 
-  return null;
+  var isDraw = true;
+
+  for (var _i2 = 0; _i2 < squares.length; _i2++) {
+    if (squares[_i2] === null) {
+      isDraw = false;
+      break;
+    }
+  }
+
+  return {
+    winner: null,
+    line: null,
+    isDraw: isDraw
+  };
 }
 },{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./index.css":"index.css"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
@@ -26052,7 +26112,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49715" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49863" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
