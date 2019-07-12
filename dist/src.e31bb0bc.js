@@ -25859,8 +25859,9 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 //stateless functional component
 function Square(props) {
+  var className = "square" + (props.highlight ? ' highlight' : '');
   return _react.default.createElement("button", {
-    className: "square",
+    className: className,
     onClick: props.onClick
   }, props.value);
 }
@@ -25881,6 +25882,7 @@ function (_React$Component) {
     value: function renderSquare(i) {
       var _this = this;
 
+      var winnerMoves = this.props.winnerMoves;
       return _react.default.createElement(Square, {
         key: i //value and onClick are both props sent to Square component
         ,
@@ -25888,7 +25890,8 @@ function (_React$Component) {
         ,
         onClick: function onClick() {
           return _this.props.onClick(i);
-        }
+        },
+        highlight: winnerMoves && winnerMoves.includes(i)
       });
     }
   }, {
@@ -25948,7 +25951,7 @@ function (_React$Component2) {
 
       var squares = current.squares.slice(); //if there is already a winner or the square is filled, return early
 
-      if (calculateWinner(squares) || squares[i]) {
+      if (calculateWinner(squares).winner || squares[i]) {
         return;
       } //set current square
 
@@ -25987,7 +25990,8 @@ function (_React$Component2) {
 
       var history = this.state.history;
       var current = history[this.state.stepNumber];
-      var winner = calculateWinner(current.squares);
+      var winner = calculateWinner(current.squares).winner;
+      var winnerMoves = calculateWinner(current.squares).line;
       var moves = history.map(function (step, move) {
         var latestMove = step.lastestMove;
         var row = Math.floor(latestMove / 3) + 1;
@@ -26024,7 +26028,8 @@ function (_React$Component2) {
         squares: current.squares,
         onClick: function onClick(i) {
           return _this3.handleClick(i);
-        }
+        },
+        winnerMoves: winnerMoves
       })), _react.default.createElement("div", {
         className: "game-info"
       }, _react.default.createElement("div", null, status), _react.default.createElement("button", {
@@ -26051,11 +26056,16 @@ function calculateWinner(squares) {
         c = _lines$i[2];
 
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return {
+        winner: squares[a],
+        line: lines[i]
+      };
     }
   }
 
-  return null;
+  return {
+    winner: null
+  };
 }
 },{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./index.css":"index.css"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
