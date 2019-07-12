@@ -25881,8 +25881,9 @@ function (_React$Component) {
     value: function renderSquare(i) {
       var _this = this;
 
-      return _react.default.createElement(Square //value and onClick are both props sent to Square component
-      , {
+      return _react.default.createElement(Square, {
+        key: i //value and onClick are both props sent to Square component
+        ,
         value: this.props.squares[i] //passing the location of each square into the onClick handler
         ,
         onClick: function onClick() {
@@ -25893,13 +25894,23 @@ function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      return _react.default.createElement("div", null, _react.default.createElement("div", {
-        className: "board-row"
-      }, this.renderSquare(0), this.renderSquare(1), this.renderSquare(2)), _react.default.createElement("div", {
-        className: "board-row"
-      }, this.renderSquare(3), this.renderSquare(4), this.renderSquare(5)), _react.default.createElement("div", {
-        className: "board-row"
-      }, this.renderSquare(6), this.renderSquare(7), this.renderSquare(8)));
+      var boardSize = 3;
+      var squares = [];
+
+      for (var i = 0; i < boardSize; i++) {
+        var row = [];
+
+        for (var j = 0; j < boardSize; j++) {
+          row.push(this.renderSquare(i * boardSize + j));
+        }
+
+        squares.push(_react.default.createElement("div", {
+          key: i,
+          className: "board-row"
+        }, row));
+      }
+
+      return _react.default.createElement("div", null, squares);
     }
   }]);
 
@@ -26056,7 +26067,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62521" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64744" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
