@@ -25992,6 +25992,7 @@ function (_React$Component2) {
       var current = history[this.state.stepNumber];
       var winner = calculateWinner(current.squares).winner;
       var winnerMoves = calculateWinner(current.squares).line;
+      var isDraw = calculateWinner(current.squares).isDraw;
       var moves = history.map(function (step, move) {
         var latestMove = step.lastestMove;
         var row = Math.floor(latestMove / 3) + 1;
@@ -26017,7 +26018,11 @@ function (_React$Component2) {
       if (winner) {
         status = 'Winner: ' + winner;
       } else {
-        status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+        if (isDraw) {
+          status = 'Draw';
+        } else {
+          status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+        }
       }
 
       return _react.default.createElement("div", {
@@ -26058,13 +26063,25 @@ function calculateWinner(squares) {
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       return {
         winner: squares[a],
-        line: lines[i]
+        line: lines[i],
+        isDraw: false
       };
     }
   }
 
+  var isDraw = true;
+
+  for (var _i2 = 0; _i2 < squares.length; _i2++) {
+    if (squares[_i2] === null) {
+      isDraw = false;
+      break;
+    }
+  }
+
   return {
-    winner: null
+    winner: null,
+    line: null,
+    isDraw: isDraw
   };
 }
 },{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","./index.css":"index.css"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
