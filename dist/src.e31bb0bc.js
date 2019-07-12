@@ -25977,6 +25977,7 @@ function (_React$Component2) {
         return _react.default.createElement("li", {
           key: move
         }, _react.default.createElement("button", {
+          className: _this3.state.stepNumber === move ? 'move-button-selected' : '',
           onClick: function onClick() {
             return _this3.jumpTo(move);
           }
@@ -26055,7 +26056,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58592" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62521" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

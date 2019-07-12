@@ -49,5 +49,8 @@ ol, ul {
   margin-left: 20px;
 }
 
+.move-button-selected {
+  font-weight: bold;
+}
 
 /*# sourceMappingURL=/src.e31bb0bc.css.map */
